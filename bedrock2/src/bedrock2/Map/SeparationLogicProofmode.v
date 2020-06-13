@@ -2,6 +2,8 @@ From coqutil Require Import Decidable.
 From coqutil Require Import Map.Interface Map.Properties.
 Require Import bedrock2.Map.Separation.
 Require Export bedrock2.Lift1Prop bedrock2.Map.SeparationLogic.
+(* for this to work you'll need to opam install coq-iris from the Coq opam
+repository *)
 From iris Require Export proofmode.tactics.
 
 (* need to provide an interpretation for this notation in default scope *)
