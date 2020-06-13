@@ -1,3 +1,4 @@
+Require Import bedrock2.Map.SeparationLogicProofmode.
 Require Import coqutil.Map.Interface bedrock2.Map.Separation bedrock2.Map.SeparationLogic bedrock2.Lift1Prop.
 Require Import Coq.Lists.List Coq.ZArith.BinInt. Local Open Scope Z_scope.
 Require Import coqutil.Word.Interface coqutil.Word.Properties.
@@ -34,7 +35,7 @@ Section Array.
       | |- iff1 _ (sep _ (array ?mid _)) => replace mid with start; cycle 1
       end.
       { eapply word.unsigned_inj.
-        repeat (rewrite ?word.unsigned_add, ?word.unsigned_of_Z, ?Z.mul_0_r, ?Z.mod_0_l, ?Z.add_0_r, ?word.wrap_unsigned || unfold word.wrap); trivial. }
+        repeat (rewrite -> ?word.unsigned_add, ?word.unsigned_of_Z, ?Z.mul_0_r, ?Z.mod_0_l, ?Z.add_0_r, ?word.wrap_unsigned || unfold word.wrap); trivial. }
       cancel.
     - rewrite <- app_comm_cons. rewrite array_cons. simpl.
       specialize (IHxs ys (word.add start size)). simpl in IHxs.
@@ -46,7 +47,7 @@ Section Array.
         replace addr1 with addr2; [reflexivity|]
       end.
       { eapply word.unsigned_inj.
-        repeat (rewrite ?word.unsigned_add, ?word.unsigned_of_Z, ?Z.mul_0_r, ?Z.mul_1_r, ?Z.mod_0_l, ?Z.add_0_r, ?Z.mul_add_distr_l, ?word.wrap_unsigned, ?Zdiv.Zplus_mod_idemp_r, ?Zdiv.Zplus_mod_idemp_l || unfold word.wrap); trivial.
+        repeat (rewrite -> ?word.unsigned_add, ?word.unsigned_of_Z, ?Z.mul_0_r, ?Z.mul_1_r, ?Z.mod_0_l, ?Z.add_0_r, ?Z.mul_add_distr_l, ?word.wrap_unsigned, ?Zdiv.Zplus_mod_idemp_r, ?Zdiv.Zplus_mod_idemp_l || unfold word.wrap); trivial.
         f_equal.
         blia. }
   Qed.
@@ -59,7 +60,7 @@ Section Array.
     etransitivity; [eapply array_append|].
     repeat Morphisms.f_equiv.
     eapply word.unsigned_inj.
-    repeat (rewrite ?word.unsigned_of_Z, ?word.unsigned_mul, ?Zdiv.Zmult_mod_idemp_r || unfold word.wrap).
+    repeat (rewrite -> ?word.unsigned_of_Z, ?word.unsigned_mul, ?Zdiv.Zmult_mod_idemp_r || unfold word.wrap).
     reflexivity.
   Qed.
 
@@ -78,8 +79,8 @@ Section Array.
     etransitivity; [eapply array_append|]; eapply iff1_sep_cancel.
     destruct B; cbn [array hd_error tl]; [solve[cancel]|].
     subst A; destruct (Compare_dec.le_le_S_dec (length xs) n) as [Hle|Hle].
-    { rewrite firstn_all2, <-app_nil_r in H by assumption; eapply app_inv_head in H; discriminate H. }
-    rewrite firstn_length_le by blia; reflexivity.
+    { rewrite -> firstn_all2, <-app_nil_r in H by assumption; eapply app_inv_head in H; discriminate H. }
+    rewrite -> firstn_length_le by blia; reflexivity.
   Qed.
 
   Context {default : T}.
@@ -109,20 +110,20 @@ Section Array.
     pose proof word.unsigned_range size.
     pose proof word.unsigned_range (word.sub a start).
     destruct (Z.eq_dec (word.unsigned size) 0) as [Hz|Hnz].
-    { rewrite Hz in *. blia. }
+    { rewrite -> Hz in *. blia. }
     replace a with (word.add start (word.mul (word.of_Z (Z.of_nat n)) size)); cycle 1.
     { subst n.
-      rewrite Znat.Z2Nat.id by (eapply Z.div_pos; blia).
+      rewrite -> Znat.Z2Nat.id by (eapply Z.div_pos; blia).
       eapply word.unsigned_inj.
-      repeat rewrite ?word.unsigned_add, ?word.unsigned_mul, ?word.unsigned_of_Z.
-      repeat (rewrite ?Zdiv.Zmult_mod_idemp_l, ?Zdiv.Zmult_mod_idemp_r, ?Zdiv.Zplus_mod_idemp_r, ?Zdiv.Zplus_mod_idemp_l || unfold word.wrap).
-      rewrite Z.mul_comm, <-Zdiv.Z_div_exact_full_2 by trivial.
-      repeat (rewrite ?word.unsigned_sub, ?Zdiv.Zminus_mod_idemp_r, ?Zdiv.Zminus_mod_idemp_l, ?Zdiv.Zplus_mod_idemp_r, ?Zdiv.Zplus_mod_idemp_l || unfold word.wrap).
+      repeat rewrite -> ?word.unsigned_add, ?word.unsigned_mul, ?word.unsigned_of_Z.
+      repeat (rewrite -> ?Zdiv.Zmult_mod_idemp_l, ?Zdiv.Zmult_mod_idemp_r, ?Zdiv.Zplus_mod_idemp_r, ?Zdiv.Zplus_mod_idemp_l || unfold word.wrap).
+      rewrite -> Z.mul_comm, <-Zdiv.Z_div_exact_full_2 by trivial.
+      repeat (rewrite -> ?word.unsigned_sub, ?Zdiv.Zminus_mod_idemp_r, ?Zdiv.Zminus_mod_idemp_l, ?Zdiv.Zplus_mod_idemp_r, ?Zdiv.Zplus_mod_idemp_l || unfold word.wrap).
       replace (word.unsigned start + (word.unsigned a - word.unsigned start)) with (word.unsigned a) by blia.
-      rewrite Z.mod_small by assumption; trivial. }
+      rewrite -> Z.mod_small by assumption; trivial. }
     replace (word.mul (word.of_Z (Z.of_nat n)) size) with (word.of_Z (word.unsigned size * Z.of_nat n)); cycle 1.
     { eapply word.unsigned_inj.
-      repeat (rewrite ?word.unsigned_of_Z, ?word.unsigned_mul, ?Zdiv.Zmult_mod_idemp_r, ?Zdiv.Zmult_mod_idemp_l || unfold word.wrap).
+      repeat (rewrite -> ?word.unsigned_of_Z, ?word.unsigned_mul, ?Zdiv.Zmult_mod_idemp_r, ?Zdiv.Zmult_mod_idemp_l || unfold word.wrap).
       f_equal. blia. }
     eapply (array_index_nat_inbounds xs start n); subst n.
     rewrite <-Znat.Nat2Z.id.
@@ -146,7 +147,7 @@ Section ByteArray.
         array (word.add a (word.of_Z 1)) (skipn (S i) xs) ) ).
   Proof.
     eapply array_address_inbounds;
-      rewrite ?word.unsigned_of_Z_1, ?Z.mul_1_l, ?Z.mod_1_r, ?Z.div_1_r; auto.
+      rewrite -> ?word.unsigned_of_Z_1, ?Z.mul_1_l, ?Z.mod_1_r, ?Z.div_1_r; auto.
   Qed.
 
   Lemma bytearray_index_inbounds xs (start iw : word)
@@ -160,6 +161,18 @@ Section ByteArray.
     rewrite (bytearray_address_inbounds xs start (word.add start iw));
     replace (word.sub (word.add start iw) start) with iw; try (reflexivity || assumption).
     all : rewrite word.word_sub_add_l_same_l; trivial.
+  Qed.
+
+  Lemma bytearray_index_inbounds' xs (start iw : word)
+    (Hlen : word.unsigned iw < Z.of_nat (length xs))
+    (i := Z.to_nat (word.unsigned iw))
+    : pred_iff (array start xs)
+      (array start (firstn i xs) * (
+        ptsto (word.add start iw) (hd (byte.of_Z 0) (skipn i xs)) *
+        array (word.add (word.add start iw) (word.of_Z 1)) (skipn (S i) xs) ) ).
+  Proof.
+    rewrite pred_iff_eq.
+    apply bytearray_index_inbounds; auto.
   Qed.
 
   Lemma bytearray_append xs ys start :

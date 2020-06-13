@@ -5,6 +5,7 @@ Require Import coqutil.Z.Lia.
 
   From bedrock2 Require Import BasicC64Semantics ProgramLogic.
   From bedrock2 Require Import Array Scalars Separation.
+  From bedrock2 Require Import SeparationLogicProofmode.
   From coqutil Require Import Word.Interface Map.Interface.
 
   From coqutil.Tactics Require Import letexists.
@@ -74,7 +75,15 @@ Section WithParameters.
     eapply Properties.word.if_nonzero in H1; rewrite word.unsigned_ltu in H1; eapply Z.ltb_lt in H1.
 
     simple refine (store_one_of_sep _ _ _ _ _ _ (Lift1Prop.subrelation_iff1_impl1 _ _ _ _ _ H) _); shelve_unifiable.
-    1: (etransitivity; [etransitivity|]); cycle -1; [ | | eapply Proper_sep_iff1; [|reflexivity]; eapply bytearray_index_inbounds]; try ecancel; try bomega.
+    { iSplit.
+      - iIntros "[Hbytes HR]".
+        iDestruct (bytearray_index_inbounds with "Hbytes") as "(Hbytes1 & $ & Hbytes2)".
+        { bomega. }
+        iAccu.
+      - iIntros "(Hptsto& (HR&Hbytes1&Hbytes2))".
+        iFrame.
+        iDestruct (bytearray_index_inbounds with "[$Hbytes1 $Hbytes2 $Hptsto]") as "$".
+        bomega. }
 
     repeat straightline.
 
