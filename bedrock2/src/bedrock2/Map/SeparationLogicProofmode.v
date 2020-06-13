@@ -13,6 +13,9 @@ Global Set Warnings "-convert_concl_no_check".
 Section mem.
   Context {key value} {mem : map.map key value} {mem_ok: map.ok mem}.
   Context {key_eqb: key -> key -> bool} {key_eq_dec: EqDecider key_eqb}.
+  (* this will the the carrier for the BI, meaning the proof mode will be able
+  to prove properties about entailments (impl1) over this type (which is generic
+  over the keys and values) *)
   Notation pred := (mem → Prop).
 
   Definition pred_iff_def (p1 p2: pred) := iff1 p1 p2.
@@ -24,12 +27,6 @@ Section mem.
   Instance pred_equivalence : Equivalence (≡@{pred}).
   Proof. firstorder. Qed.
   Canonical Structure predO := discreteO pred.
-
-  Lemma impl1_to_iff1 (p1 p2: pred) :
-    impl1 p1 p2 →
-    impl1 p2 p1 →
-    iff1 p1 p2.
-  Proof. firstorder. Qed.
 
   (* pred_entails = impl1 *)
   (* pred_emp = emp *)
@@ -83,11 +80,13 @@ Section mem.
 
   Hint Resolve pred_persistently_and_sep_elim : core.
 
+  (* this proves all the core properties that our needed for the BI algebraic
+  structure *)
   Lemma pred_bi_mixin :
     BiMixin (H0:=iff1) impl1 (Separation.emp True) pred_pure pred_and pred_or pred_impl pred_forall
             pred_ex sep pred_wand pred_persistently.
   Proof.
-    split; intros; auto; try firstorder.
+    split; intros; auto; try firstorder. (* almost everything is proven with firstorder *)
     - apply _.
     - rewrite sep_emp_True_l //.
     - rewrite sep_emp_True_l //.

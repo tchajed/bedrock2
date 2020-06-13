@@ -74,6 +74,7 @@ Section WithParameters.
     split; [|solve [repeat straightline]]; repeat straightline.
     eapply Properties.word.if_nonzero in H1; rewrite word.unsigned_ltu in H1; eapply Z.ltb_lt in H1.
 
+    (* we prove this side condition using the proof mode rather than rewrites *)
     simple refine (store_one_of_sep _ _ _ _ _ _ (Lift1Prop.subrelation_iff1_impl1 _ _ _ _ _ H) _); shelve_unifiable.
     { iSplit.
       - iIntros "[Hbytes HR]".
@@ -84,6 +85,10 @@ Section WithParameters.
         iFrame.
         iDestruct (bytearray_index_inbounds with "[$Hbytes1 $Hbytes2 $Hptsto]") as "$".
         bomega. }
+
+    (* XXX: unfortunately the rest of the proof breaks because the instantiated
+    frame is different than the original proof (it's equal up to
+    commutativity) *)
 
     repeat straightline.
 
